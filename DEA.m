@@ -52,8 +52,8 @@ while theta_f ~= 0 && i <= 10000 % i 應該取10000，為了測試可調小省�
     desire_index = max(1, min(10000, desire_index));  % 確保索引在有效範圍內
     Ne = Interactive(desire_index);
     theta_as = theta_as - 30; %恢復theta_as 的值
-    
     fprintf('Ne = %f\n', Ne);
+    
     % 添加小量以避免除以零
     epsilon = 1e-10;
     fprintf('epsilon = %f\n', epsilon);
@@ -119,11 +119,11 @@ while theta_f ~= 0 && i <= 10000 % i 應該取10000，為了測試可調小省�
     fprintf('delta_z(%d) = %f\n', i, delta_z(i));
     
     % 計算 delta_beta，添加檢查以避免除以零
-    if abs(C3) < epsilon || abs(Nt) < epsilon
-        delta_beta = epsilon;
-    else
+%     if abs(C3) < epsilon || abs(Nt) < epsilon
+%         delta_beta = 0;
+%     else
         delta_beta = ((C3 * m * Nt_max * (Nm / Nm_max)^(m-1)) / (abs(C3) * n * Nm_max * (Nt / Nt_max)^(n-1))) * (delta_t / Lf);
-    end
+%     end
     fprintf('delta_beta = %f\n', delta_beta);
     
     
@@ -134,7 +134,7 @@ while theta_f ~= 0 && i <= 10000 % i 應該取10000，為了測試可調小省�
     
     % 計算 delta_Ta，添加檢查以避免除以零
     if abs(theta_a - theta_0) < epsilon
-        delta_Ta = 0;
+        delta_Ta = epsilon;
     else
         delta_Ta = delta_z(i) * 2 * En * dl * Ncl * (Su0 + 0.5 * k * Za) / (theta_a - theta_0)^2;
     end
@@ -200,7 +200,7 @@ if i > 1
 
     % 移動 x 軸到頂部
     set(gca, 'XAxisLocation', 'top');
-    
+
     grid on;
 
     % 設置軸的範圍（根據實際數據調整）

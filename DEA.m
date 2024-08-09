@@ -42,7 +42,7 @@ x_positions(1) = 0;
 z_positions(1) = 0;
 
 % 主循環
-while theta_f ~= 0 && i <= 10000 % i 應該取10000，為了測試方便先取10
+while theta_f ~= 0 && i <= 10000 % i 應該取10000，為了測試可調小省時間
     fprintf('---------------------------------------------------------------------\n');
     fprintf('這是第 %d 次迴圈 \n', i);
     fprintf('theta_f = %.4f, theta_a = %.4f, Za = %.4f\n',  theta_f, theta_a, Za);
@@ -198,10 +198,9 @@ if i > 1
     ylabel('貫入深度 (Penetration Depth)');
     title('嵌入式拖錨 DEA 貫入軌跡示意圖');
 
-    % 反轉 y 軸方向使深度向下增加
-    set(gca, 'YDir', 'reverse');
-
-    % 添加網格
+    % 移動 x 軸到頂部
+    set(gca, 'XAxisLocation', 'top');
+    
     grid on;
 
     % 設置軸的範圍（根據實際數據調整）

@@ -45,7 +45,7 @@ x_positions(1) = 0;
 z_positions(1) = 0;
 
 % 主循環
-while theta_f > 0 && i <= 10000
+while theta_f ~= 0 && i <= 10000
     fprintf('---------------------------------------------------------------------\n');
     fprintf('這是第 %d 次迴圈 \n', i);
     fprintf('theta_f = %.4f, theta_a = %.4f, Za = %.4f\n',  theta_f, theta_a, Za);
@@ -110,7 +110,8 @@ while theta_f > 0 && i <= 10000
         warning('Some input parameters are not finite. Skipping this iteration.');
         continue;
     end
-    
+    fprintf('parameters\n');
+    fprintf('delta_hat_z = %f\nEn = %f\nNcl = %f\nhat_Ta = %f\ntheta_a = %f\neta = %f\nhat_Z = %f\ndelta_hat_Ta = %f\ndelta_theta_s = %f\n', delta_hat_z, En, Ncl, hat_Ta, theta_a, eta, hat_Z, delta_hat_Ta, delta_theta_s);
     % 求解 delta_theta_a
     initial_guess = 1;
     try
@@ -123,7 +124,7 @@ while theta_f > 0 && i <= 10000
     % 檢查 delta_theta_a 的有效性
     if isnan(delta_theta_a) || ~isreal(delta_theta_a) || abs(delta_theta_a) > pi
         warning('Invalid delta_theta_a calculated: %f. Capping it.', delta_theta_a);
-        delta_theta_a = sign(delta_theta_a) * min(abs(delta_theta_a), pi);
+%         delta_theta_a = sign(delta_theta_a) * min(abs(delta_theta_a), pi);
     end
     
     fprintf('delta_theta_a = %f\n', delta_theta_a);
@@ -142,6 +143,7 @@ end
 if i > 10000
     disp('達到最大迭代次數');
 elseif theta_f <= 0
+    fprintf('theta_f = %f\n',theta_f);
     disp('計算完成：theta_f 達到或小於 0');
 end
 

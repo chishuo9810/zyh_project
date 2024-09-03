@@ -22,9 +22,9 @@ n = 4.19;
 p = 1.57;
 q = 4.43;
 Za = 0;       % Zai+1 = Zai + deltaZi 記得改
-theta_a = 1e-10;
+theta_a = 0.001;
 theta_s = 0;
-theta_as = 1e-10; % theta_as = theta_a - theta_s 記得改
+theta_as = 0.001; % theta_as = theta_a - theta_s 記得改
 En = 1;
 theta_0 = 0;
 theta_f = 50;
@@ -108,27 +108,10 @@ while theta_f ~= 0 && i <= 50
     delta_theta_s = delta_beta;
 
     if i == 1
-        delta_theta_a = ((En * Ncl / hat_Ta - ((theta_a ^ 2 - theta_0 ^ 2) / 2) * ( eta + hat_Z))) / (theta_a) * abs(delta_hat_z);
+        delta_theta_a = ((En * Ncl / hat_Ta - ((theta_a ^ 2 - theta_0 ^ 2) / 2) * ( eta + hat_Z))) / (theta_a) * (delta_hat_z);
     else
-        delta_theta_a = ((En * Ncl / hat_Ta - ((theta_a ^ 2 - theta_0 ^ 2) / 2) * ( eta + hat_Z))) / ((theta_a) + (1 / hat_Ta) * (delta_hat_Ta / abs(theta_as - last_theta_as)) * (((theta_a) ^ 2) /2) * (1 - (delta_theta_s / abs(theta_a - last_theta_a)))) * abs(delta_hat_z);
+        delta_theta_a = ((En * Ncl / hat_Ta - ((theta_a ^ 2 - theta_0 ^ 2) / 2) * ( eta + hat_Z))) / ((theta_a) + (1 / hat_Ta) * (delta_hat_Ta / (theta_as - last_theta_as)) * (((theta_a) ^ 2) /2) * (1 - (delta_theta_s / (theta_a - last_theta_a)))) * (delta_hat_z);
     end    
-    
-%     % 檢查參數有效性
-%     if any(~isfinite([delta_hat_z, En, Ncl, hat_Ta, theta_a, eta, hat_Z, delta_hat_Ta, delta_theta_s]))
-%         warning('Some input parameters are not finite. Skipping this iteration.');
-%         continue;
-%     end
-%     fprintf('parameters\n');
-%     fprintf('delta_hat_z = %f\nEn = %f\nNcl = %f\nhat_Ta = %f\ntheta_a = %f\neta = %f\nhat_Z = %f\ndelta_hat_Ta = %f\ndelta_theta_s = %f\n', delta_hat_z, En, Ncl, hat_Ta, theta_a, eta, hat_Z, delta_hat_Ta, delta_theta_s);
-%     % 求解 delta_theta_a
-%     initial_guess = 1;
-%     try
-%         delta_theta_a = solve_delta_theta_a_complex(delta_hat_z, En, Ncl, hat_Ta, theta_a, eta, hat_Z, delta_hat_Ta, delta_theta_s, initial_guess);
-%     catch
-%         warning('Failed to solve for delta_theta_a. Skipping this iteration.');
-%         
-%         continue;
-%     end
     
     
     fprintf('delta_theta_a = %f\n', delta_theta_a);
@@ -181,40 +164,3 @@ else
     disp('沒有足夠的數據來繪圖');
 end
 
-% % 輔助函數：求解 delta_theta_a
-% function delta_theta_a = solve_delta_theta_a_complex(delta_hat_Z, En, Ncl, hat_Ta, theta_a, eta, hat_Z, delta_hat_Ta, delta_theta_s, initial_guess)
-%     equation = @(delta_theta_a) safe_equation(delta_theta_a, delta_hat_Z, En, Ncl, hat_Ta, theta_a, eta, hat_Z, delta_hat_Ta, delta_theta_s);
-%     options = optimset('Display', 'off');
-%     try
-%         delta_theta_a = fzero(equation, initial_guess, options);
-%     catch
-%         warning('fzero failed to find a solution. Returning initial guess.');
-%         delta_theta_a = initial_guess;
-%     end
-% end
-% 
-% function result = safe_equation(delta_theta_a, delta_hat_Z, En, Ncl, hat_Ta, theta_a, eta, hat_Z, delta_hat_Ta, delta_theta_s)
-%     epsilon = 1e-10;
-%     
-%     if abs(delta_hat_Z) < epsilon
-%         result = 0;
-%         return;
-%     end
-%     
-%     numerator = En * Ncl / hat_Ta - (((theta_a) ^ 2) / 2) * (eta + hat_Z);
-%     
-%     denominator_term = delta_theta_a - delta_theta_s;
-%     if abs(denominator_term) < epsilon
-%         result = 0;
-%         return;
-%     end
-%     
-%     denominator = theta_a + (1 / hat_Ta) * (delta_hat_Ta / denominator_term) * (((theta_a) ^ 2) / 2) * (1 - (delta_theta_s / delta_theta_a));
-%     
-%     if abs(denominator) < epsilon
-%         result = 0;
-%         return;
-%     end
-%     
-%     result = delta_theta_a / delta_hat_Z - numerator / denominator;
-% end
